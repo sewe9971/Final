@@ -1,0 +1,3 @@
+../Core/Src/RNG_Driver.c:12:6:RNG_Init	2
+../Core/Src/RNG_Driver.c:21:6:RNG_Error_Handler	1
+../Core/Src/RNG_Driver.c:27:10:RNG_Random	2

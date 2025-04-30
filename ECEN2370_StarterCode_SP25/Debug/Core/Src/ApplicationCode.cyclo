@@ -1,0 +1,13 @@
+../Core/Src/ApplicationCode.c:30:6:ApplicationInit	1
+../Core/Src/ApplicationCode.c:50:6:LCD_Visual_Demo	1
+../Core/Src/ApplicationCode.c:55:6:LCD_Start_Screen	1
+../Core/Src/ApplicationCode.c:62:6:gameScreen1P	1
+../Core/Src/ApplicationCode.c:82:6:polling1P	20
+../Core/Src/ApplicationCode.c:228:6:gameScreen2P	1
+../Core/Src/ApplicationCode.c:246:5:place	4
+../Core/Src/ApplicationCode.c:261:5:checkWin	16
+../Core/Src/ApplicationCode.c:311:6:polling2P	17
+../Core/Src/ApplicationCode.c:430:6:LCD_Main_Menu_Polling	4
+../Core/Src/ApplicationCode.c:450:6:LCD_Touch_Polling_Demo	2
+../Core/Src/ApplicationCode.c:471:6:buttonInitInterrupt	1
+../Core/Src/ApplicationCode.c:475:6:EXTI0_IRQHandler	5
