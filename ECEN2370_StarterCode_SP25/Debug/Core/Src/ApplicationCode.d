@@ -36,7 +36,8 @@ Core/Src/ApplicationCode.o: ../Core/Src/ApplicationCode.c \
  ../Core/Inc/ili9341.h ../Core/Inc/fonts.h ../Core/Inc/stmpe811.h \
  ../Core/Inc/RNG_Driver.h ../Core/Inc/ApplicationCode.h \
  ../Core/Inc/Button_Driver.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/STM32F4xx_hal.h
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/STM32F4xx_hal.h \
+ ../Core/Inc/Timer_Driver.h
 ../Core/Inc/ApplicationCode.h:
 ../Core/Inc/LCD_Driver.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -79,3 +80,4 @@ Core/Src/ApplicationCode.o: ../Core/Src/ApplicationCode.c \
 ../Core/Inc/ApplicationCode.h:
 ../Core/Inc/Button_Driver.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/STM32F4xx_hal.h:
+../Core/Inc/Timer_Driver.h:

@@ -66,6 +66,7 @@
 /**
   * @brief This function handles Non maskable interrupt.
   */
+
 void NMI_Handler(void)
 {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */

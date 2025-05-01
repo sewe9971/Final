@@ -1,0 +1,4 @@
+../Core/Src/Timer_Driver.c:12:6:Timer_Init	16	static
+../Core/Src/Timer_Driver.c:29:6:TIM_Error_Handler	4	static
+../Core/Src/Timer_Driver.c:35:5:Timer_Count	4	static
+../Core/Src/Timer_Driver.c:39:6:Timer_Start	8	static

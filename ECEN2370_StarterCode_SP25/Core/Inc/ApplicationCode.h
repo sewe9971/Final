@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include "RNG_Driver.h"
 #include "Button_Driver.h"
+#include "Timer_Driver.h"
 
 
 #ifndef INC_APPLICATIONCODE_H_
@@ -28,6 +29,9 @@ int place(void);
 int checkWin();
 
 void buttonInitInterrupt(void);
+
+void LCD_Final_Screen(void);
+void printNum(int x, int y, int num);
 
 #if (COMPILE_TOUCH_FUNCTIONS == 1)
 void LCD_Touch_Polling_Demo(void);

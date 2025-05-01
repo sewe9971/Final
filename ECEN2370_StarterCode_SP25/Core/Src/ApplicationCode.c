@@ -9,7 +9,6 @@
 
 /* Static variables */
 
-
 extern void initialise_monitor_handles(void); 
 
 #if COMPILE_TOUCH_FUNCTIONS == 1
@@ -26,6 +25,12 @@ int board[6][7] = {{0, 0, 0, 0, 0, 0, 0},
 int position = 0;
 int turn = 1;
 int mode = 0;
+int time = 0;
+
+int final = 0;
+
+int redScore = 0;
+int yellowScore = 0;
 
 void ApplicationInit(void)
 {
@@ -42,6 +47,7 @@ void ApplicationInit(void)
 	StaticTouchData.orientation = STMPE811_Orientation_Portrait_2;
 
 	RNG_Init();
+	Timer_Init();
 	buttonInitInterrupt();
 
 	#endif // COMPILE_TOUCH_FUNCTIONS
@@ -54,12 +60,16 @@ void LCD_Visual_Demo(void)
 
 void LCD_Start_Screen(void)
 {
+	final = 0;
+	HAL_NVIC_DisableIRQ(TIM2_IRQn);
 	mode = 0;
 	startScreen();
 	LCD_Main_Menu_Polling();
 }
 
 void gameScreen1P(void) {
+	final = 0;
+	time = 0;
 
 	mode = 1;
 
@@ -73,7 +83,9 @@ void gameScreen1P(void) {
 
 	drawPosition(position, turn);
 
-	HAL_Delay(400);
+	HAL_Delay(300);
+
+	Timer_Start();
 
 	polling1P();
 
@@ -181,6 +193,8 @@ void polling1P(void) {
 		LCD_DisplayChar(140,80,'i');
 		LCD_DisplayChar(153,80,'n');
 		LCD_DisplayChar(165,80,'s');
+
+		redScore++;
 	}
 
 	if (checkWin() == 2) {
@@ -197,6 +211,8 @@ void polling1P(void) {
 		LCD_DisplayChar(130,80,'i');
 		LCD_DisplayChar(143,80,'n');
 		LCD_DisplayChar(155,80,'s');
+
+		yellowScore++;
 	}
 
 	if (checkWin() == 3) {
@@ -222,10 +238,12 @@ void polling1P(void) {
 	}
 
 	HAL_Delay(1500);
-	LCD_Start_Screen();
+	LCD_Final_Screen();
 }
 
 void gameScreen2P(void) {
+	time = 0;
+	final = 0;
 	mode = 2;
 	turn = 1;
 
@@ -237,7 +255,9 @@ void gameScreen2P(void) {
 
 	drawPosition(position, turn);
 
-	HAL_Delay(400);
+	HAL_Delay(300);
+
+	Timer_Start();
 
 	polling2P();
 
@@ -378,6 +398,7 @@ void polling2P(void) {
 		LCD_DisplayChar(143,80,'n');
 		LCD_DisplayChar(155,80,'s');
 
+		redScore++;
 	}
 
 	if (checkWin() == 2) {
@@ -398,6 +419,7 @@ void polling2P(void) {
 		LCD_DisplayChar(153,80,'n');
 		LCD_DisplayChar(165,80,'s');
 
+		yellowScore++;
 	}
 
 	if (checkWin() == 3) {
@@ -424,7 +446,85 @@ void polling2P(void) {
 
 	HAL_Delay(1500);
 
+	LCD_Final_Screen();
+}
+
+void LCD_Final_Screen(void) {
+
+	HAL_NVIC_DisableIRQ(TIM2_IRQn);
+
+	final = 1;
+	LCD_Clear(0,LCD_COLOR_WHITE);
+
+	LCD_SetTextColor(LCD_COLOR_RED);
+	LCD_SetFont(&Font16x24);
+
+	LCD_DisplayChar(70,80,'R');
+	LCD_DisplayChar(83,80,'e');
+	LCD_DisplayChar(95,80,'d');
+	printNum(120, 80, redScore);
+
+	LCD_SetTextColor(LCD_COLOR_YELLOW);
+
+	LCD_DisplayChar(60,110,'Y');
+	LCD_DisplayChar(72,110,'e');
+	LCD_DisplayChar(80,110,'l');
+	LCD_DisplayChar(85,110,'l');
+	LCD_DisplayChar(92,110,'o');
+	LCD_DisplayChar(106,110,'w');
+	printNum(131, 110, yellowScore);
+
+	LCD_SetTextColor(LCD_COLOR_BLACK);
+
+	LCD_DisplayChar(70,160,'T');
+	LCD_DisplayChar(81,160,'i');
+	LCD_DisplayChar(91,160,'m');
+	LCD_DisplayChar(106,160,'e');
+	printNum(131, 160, time);
+
+	HAL_Delay(300);
+
+	while (final == 1) {
+		if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed) {
+			if (mode == 1) {
+				gameScreen1P();
+			} else {
+				gameScreen2P();
+			}
+		}
+	}
+
 	LCD_Start_Screen();
+
+}
+
+
+
+
+
+
+void printNum(int x, int y, int num) {
+
+	if (num == 0) {
+		LCD_SetTextColor(LCD_COLOR_BLACK);
+		LCD_SetFont(&Font16x24);
+		LCD_DisplayChar(x,y,'0');
+	}
+
+	int len = 0;
+	int temp = num;
+	while(temp != 0) {
+		len += 1;
+		temp /= 10;
+	}
+
+	LCD_SetTextColor(LCD_COLOR_BLACK);
+	LCD_SetFont(&Font16x24);
+
+	for (int i=0; i < len; i++) {
+		LCD_DisplayChar(x + (13 * len) - (13 * i) - 13,y,(num % 10) + 48);
+		num /= 10;
+	}
 }
 
 void LCD_Main_Menu_Polling(void) {
@@ -475,6 +575,23 @@ void buttonInitInterrupt(void) {
 void EXTI0_IRQHandler() {
 	HAL_NVIC_DisableIRQ(EXTI0_IRQn);
 
+	if (mode == 0) {
+		HAL_EXTI_ClearPending(EXTI_GPIOA, EXTI_TRIGGER_RISING);
+
+		HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+		return;
+	}
+
+	if (final == 1) {
+
+		final = 0;
+
+		HAL_EXTI_ClearPending(EXTI_GPIOA, EXTI_TRIGGER_RISING);
+
+		HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+		return;
+	}
+
 	if (!(mode == 1 && turn == 2)) {
 		if (place() == 1) {
 			LCD_Clear(0,LCD_COLOR_WHITE);
@@ -492,4 +609,15 @@ void EXTI0_IRQHandler() {
 	HAL_EXTI_ClearPending(EXTI_GPIOA, EXTI_TRIGGER_RISING);
 
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+extern TIM_HandleTypeDef htim2;
+
+void TIM2_IRQHandler() {
+	HAL_TIM_IRQHandler(&htim2);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim) {
+	time += 1;
+	TIM2->CNT = 0;
 }
